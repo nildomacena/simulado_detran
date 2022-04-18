@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "745408592212",
+    "project_id": "simulador-detran",
+    "storage_bucket": "simulador-detran.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:745408592212:android:9026221ba7eebb4475f0c1",
+        "android_client_info": {
+          "package_name": "br.com.hagiosdev.simulado_detran"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "745408592212-59b741mcq7a2ulhn91b4i5a1h6no9s6v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjSa6p53u-d2R-9a102xpeg5zOrrkQQ2w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "745408592212-59b741mcq7a2ulhn91b4i5a1h6no9s6v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
