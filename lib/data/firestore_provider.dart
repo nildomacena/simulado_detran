@@ -104,7 +104,6 @@ class FirestoreProvider {
   Future<Questao> getQuestaoAleatoria() async {
     QuerySnapshot querySnapshot;
     int random = utilService.gerarRandomQuestao();
-    print('random: $random');
     querySnapshot = await _firestore
         .collection('questoes')
         .where('random', isGreaterThanOrEqualTo: random)

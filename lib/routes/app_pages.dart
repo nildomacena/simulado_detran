@@ -5,6 +5,8 @@ import 'package:simulado_detran/components/login_page/login_binding.dart';
 import 'package:simulado_detran/components/login_page/login_page.dart';
 import 'package:simulado_detran/components/questionario_page/questionario_binding.dart';
 import 'package:simulado_detran/components/questionario_page/questionario_page.dart';
+import 'package:simulado_detran/components/resultado_page/resultado_binding.dart';
+import 'package:simulado_detran/components/resultado_page/resultado_page.dart';
 import 'package:simulado_detran/routes/app_routes.dart';
 
 class AppPages {
@@ -16,5 +18,9 @@ class AppPages {
         name: Routes.questionario,
         page: () => QuestionarioPage(),
         binding: QuestionarioBinding()),
+    GetPage(
+        name: Routes.resultado,
+        page: () => ResultadoPage(),
+        binding: ResultadoBinding()),
   ];
 }

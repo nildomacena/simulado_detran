@@ -15,4 +15,9 @@ class Alternativa {
   factory Alternativa.fromMap(Map<String, dynamic> data) {
     return Alternativa(texto: data['texto'], correta: data['correta']);
   }
+
+  @override
+  String toString() {
+    return texto;
+  }
 }

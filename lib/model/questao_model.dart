@@ -17,11 +17,17 @@ class Questao {
       this.resposta,
       this.imagem});
 
+  Alternativa get alternativaCorreta =>
+      alternativas.firstWhere((a) => a.correta);
+
+  bool get acertou => resposta == null ? false : alternativaCorreta == resposta;
+
   factory Questao.fromFirestore(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
     List<Alternativa> alternativas = (data['alternativas'] as List)
         .map((d) => Alternativa.fromMap(d))
         .toList();
+    alternativas.shuffle();
     Categoria categoria = Categoria.fromMap(data['categoria']);
     return Questao(
         id: snapshot.id,
