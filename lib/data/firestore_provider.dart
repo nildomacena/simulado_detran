@@ -27,20 +27,35 @@ class FirestoreProvider {
   Future<List<Questao>> getQuestionario(int numQuestoes) async {
     List<Questao> questoes = [];
     for (int i = 0; i < numQuestoes; i++) {
-      late Questao questao;
+      Questao? questao = await addQuestao(questoes);
+      do {
+        questao = await addQuestao(questoes);
+      } while (questao == null);
+      questoes.add(questao);
+      /* Questao questao = await getQuestaoAleatoria();
       int count = 0;
+      bool jaConsta = false;
+
       if (questoes.isEmpty) {
-        questoes.add(await getQuestaoAleatoria());
+        questoes.add(questao);
       } else {
+        jaConsta = questoes.where((Questao q) => q.id == questao.id).isNotEmpty;
         do {
+          Questao questao = await getQuestaoAleatoria();
+          jaConsta =
+              questoes.where((Questao q) => q.id == questao.id).isNotEmpty;
+          print('jaConsta: $jaConsta');
+        } while (jaConsta);
+        questoes.add(questao); */
+      /* do {
           questao = await getQuestaoAleatoria();
           questoes.add(questao);
           print('count: $count');
           count++;
         } while (questoes.where((Questao q) => q.id == questao.id).isNotEmpty &&
-            count < numQuestoes);
-      }
-      /*  if (questoes.isEmpty) {
+            count < numQuestoes); */
+    }
+    /*  if (questoes.isEmpty) {
         questoes.add(questao);
       } else {
         while (questoes.where((Questao q) => q.id == questao.id).isEmpty) {
@@ -58,14 +73,13 @@ class FirestoreProvider {
             //    questoes.isEmpty ||
             count < numQuestoes); */
       } */
-      /*  while (questoes.where((Questao q) => q.id == questao.id).isEmpty ||
+    /*  while (questoes.where((Questao q) => q.id == questao.id).isEmpty ||
           questoes.isEmpty) {
         print('count: $count');
         questao = await getQuestaoAleatoria();
         count++;
       } */
 
-    }
     List ids = [];
     for (var q in questoes) {
       if (ids.contains(q.id)) {
@@ -75,6 +89,16 @@ class FirestoreProvider {
       }
     }
     return questoes;
+  }
+
+  Future<Questao?> addQuestao(List<Questao> questoes) async {
+    Questao questao = await getQuestaoAleatoria();
+    if (questoes.where((Questao q) => q.id == questao.id).isEmpty) {
+      return questao;
+    } else {
+      addQuestao(questoes);
+      return Future.value(null);
+    }
   }
 
   Future<Questao> getQuestaoAleatoria() async {
@@ -95,7 +119,6 @@ class FirestoreProvider {
           .limit(1)
           .get();
     }
-    print('querySnapshot.docs.first: ${querySnapshot.docs.first.data()}');
     return Questao.fromFirestore(querySnapshot.docs.first);
   }
 }
