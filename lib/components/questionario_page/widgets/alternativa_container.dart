@@ -5,15 +5,17 @@ import 'package:simulado_detran/model/alternativa_model.dart';
 
 class AlternativaContainer extends StatelessWidget {
   final Alternativa alternativa;
-  final Function onPressed;
+  final Function? onPressed;
   final String letra;
   final QuestionarioController controller;
+  final Color? backgroundColor;
 
   const AlternativaContainer(
       {required this.alternativa,
       required this.controller,
       required this.letra,
       required this.onPressed,
+      this.backgroundColor,
       Key? key})
       : super(key: key);
 
@@ -27,7 +29,9 @@ class AlternativaContainer extends StatelessWidget {
             : Colors.white,
         child: InkWell(
           onTap: () {
-            onPressed();
+            if (onPressed != null) {
+              onPressed!();
+            }
           },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
