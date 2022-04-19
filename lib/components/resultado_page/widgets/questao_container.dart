@@ -35,18 +35,27 @@ class ContainerQuestao extends StatelessWidget {
                 style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
-                    color: questao.acertou ? Colors.green : Colors.red),
+                    color: questao.resposta == null
+                        ? Colors.grey
+                        : questao.acertou
+                            ? Colors.green
+                            : Colors.red),
               ),
               Container(
-                  child: questao.acertou
+                  child: questao.resposta == null
                       ? const Icon(
-                          Icons.check,
-                          color: Colors.green,
+                          Icons.remove_circle,
+                          color: Colors.grey,
                         )
-                      : const Icon(
-                          Icons.close,
-                          color: Colors.red,
-                        ))
+                      : questao.acertou
+                          ? const Icon(
+                              Icons.check,
+                              color: Colors.green,
+                            )
+                          : const Icon(
+                              Icons.close,
+                              color: Colors.red,
+                            ))
             ],
           ),
         ),
