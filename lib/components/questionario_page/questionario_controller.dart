@@ -15,7 +15,9 @@ class QuestionarioController extends GetxController {
   late Questao questaoAtual;
   Alternativa? alternativaSelecionada;
   final QuestionarioRepository repository;
-  int segundosCountdown = 20;
+  int segundosCountdown = 1800;
+  late bool simulado;
+  late bool avulso;
 
   String get numQuestaoAtual =>
       questionario == null ? '' : '${questionario!.indexOf(questaoAtual) + 1}';
@@ -45,6 +47,12 @@ class QuestionarioController extends GetxController {
   onInit() async {
     super.onInit();
     await getQuestoes();
+    if (Get.arguments != null && Get.arguments['simulado'] != null) {
+      simulado = Get.arguments['simulado'];
+    }
+    if (Get.arguments != null && Get.arguments['avulso'] != null) {
+      simulado = Get.arguments['avulso'];
+    }
     initTimer();
   }
 
@@ -111,7 +119,7 @@ class QuestionarioController extends GetxController {
           TextButton(
               onPressed: () {
                 Get.back();
-                segundosCountdown += 10;
+                segundosCountdown += 300;
                 update();
                 initTimer();
               },

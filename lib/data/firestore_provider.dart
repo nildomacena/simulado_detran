@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:simulado_detran/util/util_service.dart';
 import 'package:simulado_detran/exceptions/auth_exceptions.dart';
 import 'package:simulado_detran/model/categoria_model.dart';
@@ -9,11 +10,15 @@ import 'package:simulado_detran/model/usuario_model.dart';
 class FirestoreProvider {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final box = GetStorage();
 
   FirestoreProvider() {
-    print('user: ${_auth.currentUser}');
-    Future.delayed(Duration(seconds: 1))
-        .then((value) => print('user: ${_auth.currentUser}'));
+    Future.delayed(const Duration(seconds: 1)).then((value) {
+      print('user: ${_auth.currentUser}');
+      if (_auth.currentUser == null && box.read('email') && box.read('senha')) {
+        fazerLogin(box.read('email'), box.read('senha'));
+      }
+    });
   }
 
   bool estaLogado() {
@@ -37,6 +42,8 @@ class FirestoreProvider {
     }
     UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: email, password: senha);
+    box.write('senha', senha);
+    box.write('email', email);
     return _firestore.doc('usuarios/${userCredential.user!.uid}').set({
       'email': email,
       'nome': nome,
@@ -63,6 +70,8 @@ class FirestoreProvider {
     }
 
     await _auth.signInWithEmailAndPassword(email: email, password: senha);
+    box.write('senha', senha);
+    box.write('email', email);
     return getUsuario();
   }
 
