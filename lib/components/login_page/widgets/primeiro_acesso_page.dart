@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simulado_detran/components/login_page/login_controller.dart';
+import 'package:simulado_detran/widgets/loading_widget.dart';
 
 class PrimeiroAcessoPage extends StatelessWidget {
   LoginController controller = Get.find();
@@ -15,15 +16,17 @@ class PrimeiroAcessoPage extends StatelessWidget {
         child: Form(
             key: controller.formKeyPrimeiroAcesso,
             child: ListView(
-              padding: EdgeInsets.symmetric(horizontal: 30),
+              padding: const EdgeInsets.symmetric(horizontal: 30),
               shrinkWrap: true,
               children: [
                 const Text(
                   'Preencha as informações',
+                  textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 30, fontWeight: FontWeight.w300),
                 ),
-                Divider(),
+                const Divider(),
                 TextFormField(
+                  keyboardType: TextInputType.number,
                   validator: controller.validatorCpf,
                   controller: controller.cpfTextController,
                   inputFormatters: [controller.maskFormatter],
@@ -57,13 +60,27 @@ class PrimeiroAcessoPage extends StatelessWidget {
                   decoration:
                       const InputDecoration(label: Text('Repita a senha')),
                 ),
-                Container(
-                    width: Get.width,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          controller.criarUsuario();
-                        },
-                        child: const Text('Salvar Cadastro')))
+                GetBuilder<LoginController>(
+                  builder: (_) {
+                    return SizedBox(
+                        width: Get.width,
+                        child: ElevatedButton(
+                            onPressed: _.carregando
+                                ? null
+                                : () {
+                                    controller.criarUsuario();
+                                  },
+                            style: ElevatedButton.styleFrom(
+                                fixedSize: Size(Get.width, 60),
+                                primary: Colors.deepOrange),
+                            child: _.carregando
+                                ? const LoadingWidget()
+                                : const Text(
+                                    'Salvar Cadastro',
+                                    style: TextStyle(fontSize: 18),
+                                  )));
+                  },
+                )
               ],
             )),
       ),

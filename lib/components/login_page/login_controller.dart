@@ -3,36 +3,38 @@ import 'package:get/get.dart';
 import 'package:simulado_detran/components/login_page/login_repository.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:simulado_detran/components/login_page/widgets/primeiro_acesso_page.dart';
+import 'package:simulado_detran/exceptions/auth_exceptions.dart';
+import 'package:simulado_detran/util/util_service.dart';
 import 'package:simulado_detran/routes/app_routes.dart';
 
 class LoginController extends GetxController {
   final GlobalKey<FormState> formKeyPrimeiroAcesso = GlobalKey<FormState>();
   final GlobalKey<FormState> formKeyLogin = GlobalKey<FormState>();
-
+  bool carregando = false;
   TextEditingController cpfTextController = TextEditingController();
   TextEditingController nomeTextController = TextEditingController();
   TextEditingController emailTextController = TextEditingController();
   TextEditingController senhaTextController = TextEditingController();
   TextEditingController confirmaSenhaTextController = TextEditingController();
 
-  MaskTextInputFormatter maskFormatter =
-      MaskTextInputFormatter(mask: '###.###.###-##');
+  MaskTextInputFormatter maskFormatter = MaskTextInputFormatter(
+    mask: '###.###.###-##',
+  );
   final LoginRepository repository;
 
-  LoginController(this.repository);
-
-  fazerLogin() {
-    Get.offAllNamed(Routes.home);
+  LoginController(this.repository) {
+    DateTime hoje = DateTime.now();
+    print(DateTime.fromMillisecondsSinceEpoch(
+        hoje.millisecondsSinceEpoch + utilService.diasEmMilisseconds(30)));
+    print(hoje);
   }
+
+  /* fazerLogin() {
+    Get.offAllNamed(Routes.home);
+  } */
 
   irParaPrimeiroAcesso() {
     Get.to(() => PrimeiroAcessoPage(), fullscreenDialog: true);
-  }
-
-  criarUsuario() {
-    if (formKeyPrimeiroAcesso.currentState!.validate()) {
-      print('Criar usuário válido');
-    }
   }
 
   String? validatorCpf(String? value) {
@@ -69,5 +71,50 @@ class LoginController extends GetxController {
       return 'As senhas devem ser iguais';
     }
     return null;
+  }
+
+  fazerLogin() async {
+    carregando = true;
+    update();
+    try {
+      await repository.fazerLogin(
+          emailTextController.text, senhaTextController.text);
+      Get.offAllNamed(Routes.home);
+    } on AutenticacaoException catch (e) {
+      utilService.snackBarErro(mensagem: e.mensagem);
+    } catch (e) {
+      utilService.snackBarErro(mensagem: 'Ocorreu um erro durante o login');
+    } finally {
+      carregando = false;
+      update();
+    }
+  }
+
+  criarUsuario() async {
+    if (!formKeyPrimeiroAcesso.currentState!.validate()) {
+      print('Criar usuário válido');
+      utilService.snackBarErro(
+          mensagem: 'Preencha as informações corretamente.');
+      return;
+    }
+    carregando = true;
+    update();
+    try {
+      print('CPF: ${maskFormatter.getUnmaskedText()} ');
+      await repository.criarUsuario(
+          emailTextController.text,
+          senhaTextController.text,
+          nomeTextController.text,
+          maskFormatter.getUnmaskedText());
+      utilService.showToast('Usuário criado!');
+      Get.offAllNamed(Routes.home);
+    } on AutenticacaoException catch (e) {
+      utilService.snackBarErro(mensagem: e.mensagem);
+    } catch (e) {
+      utilService.snackBarErro(mensagem: 'Ocorreu um erro durante o login');
+    } finally {
+      carregando = false;
+      update();
+    }
   }
 }

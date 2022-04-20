@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simulado_detran/components/questionario_page/widgets/alternativa_container.dart';
-import 'package:simulado_detran/components/util/util_service.dart';
+import 'package:simulado_detran/util/util_service.dart';
 import 'package:simulado_detran/model/alternativa_model.dart';
 import 'package:simulado_detran/model/questao_model.dart';
 

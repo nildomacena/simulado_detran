@@ -1,15 +1,73 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:simulado_detran/components/util/util_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:simulado_detran/util/util_service.dart';
+import 'package:simulado_detran/exceptions/auth_exceptions.dart';
 import 'package:simulado_detran/model/categoria_model.dart';
 import 'package:simulado_detran/model/questao_model.dart';
 import 'package:simulado_detran/model/usuario_model.dart';
 
 class FirestoreProvider {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<List<Categoria>> getCategorias() async {
     QuerySnapshot snapshot = await _firestore.collection('categorias').get();
     return snapshot.docs.map((e) => Categoria.fromFirestore(e)).toList();
+  }
+
+  Future criarUsuario(
+      String email, String nome, String cpf, String senha) async {
+    QuerySnapshot querySnapshot = await _firestore
+        .collection('preCadastros')
+        .where('cpf', isEqualTo: cpf)
+        .get();
+    if (querySnapshot.docs.isEmpty) {
+      throw AutenticacaoException(
+          'Seu CPF não foi registrado. Fale com a Auto-escola para liberar seu cadastro.');
+    }
+    UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        email: email, password: senha);
+    return _firestore.doc('usuarios/${userCredential.user!.uid}').set({
+      'email': email,
+      'nome': nome,
+      'dataCadastro': (querySnapshot.docs.first.data()
+          as Map<String, dynamic>)['dataCadastro']
+    });
+  }
+
+  fazerLogin(String email, String senha) async {
+    QuerySnapshot querySnapshot = await _firestore
+        .collection('usuarios')
+        .where('email', isEqualTo: email)
+        .get();
+    if (querySnapshot.docs.isEmpty) {
+      throw AutenticacaoException(
+          'Email ainda não cadastrado. Acesse a opção Primeiro Acesso');
+    }
+    Usuario usuario = Usuario.fromFirestore(querySnapshot.docs.first);
+    if (!utilService.checkValidadeAcesso(usuario.dataCadastro, 30)) {
+      throw AutenticacaoException(
+          'Sua licença para acesso ao simulado expirou.');
+    }
+
+    await _auth.signInWithEmailAndPassword(email: email, password: senha);
+    return getUsuario();
+  }
+
+  Future<bool> checkUsuarioJaCadastrado(String email) async {
+    QuerySnapshot snapshot = await _firestore
+        .collection('usuarios')
+        .where('email', isEqualTo: email)
+        .get();
+    return snapshot.docs.isNotEmpty;
+  }
+
+  Future<Usuario?> getUsuario() async {
+    if (_auth.currentUser == null) {
+      return null;
+    }
+    return Usuario.fromFirestore(
+        await _firestore.doc('usuarios/${_auth.currentUser!.uid}').get());
   }
 
   Future<bool> checkUsuario(String cpf) async {
@@ -32,53 +90,7 @@ class FirestoreProvider {
         questao = await addQuestao(questoes);
       } while (questao == null);
       questoes.add(questao);
-      /* Questao questao = await getQuestaoAleatoria();
-      int count = 0;
-      bool jaConsta = false;
-
-      if (questoes.isEmpty) {
-        questoes.add(questao);
-      } else {
-        jaConsta = questoes.where((Questao q) => q.id == questao.id).isNotEmpty;
-        do {
-          Questao questao = await getQuestaoAleatoria();
-          jaConsta =
-              questoes.where((Questao q) => q.id == questao.id).isNotEmpty;
-          print('jaConsta: $jaConsta');
-        } while (jaConsta);
-        questoes.add(questao); */
-      /* do {
-          questao = await getQuestaoAleatoria();
-          questoes.add(questao);
-          print('count: $count');
-          count++;
-        } while (questoes.where((Questao q) => q.id == questao.id).isNotEmpty &&
-            count < numQuestoes); */
     }
-    /*  if (questoes.isEmpty) {
-        questoes.add(questao);
-      } else {
-        while (questoes.where((Questao q) => q.id == questao.id).isEmpty) {
-          print('count: $count');
-          questao = await getQuestaoAleatoria();
-          questoes.add(questao);
-          count++;
-        }
-        /*  do {
-          questao = await getQuestaoAleatoria();
-          questoes.add(questao);
-          print('count: $count');
-          count++;
-        } while (questoes.where((Questao q) => q.id == questao.id).isNotEmpty &&
-            //    questoes.isEmpty ||
-            count < numQuestoes); */
-      } */
-    /*  while (questoes.where((Questao q) => q.id == questao.id).isEmpty ||
-          questoes.isEmpty) {
-        print('count: $count');
-        questao = await getQuestaoAleatoria();
-        count++;
-      } */
 
     List ids = [];
     for (var q in questoes) {

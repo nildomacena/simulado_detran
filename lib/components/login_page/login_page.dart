@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simulado_detran/components/login_page/login_controller.dart';
+import 'package:simulado_detran/widgets/loading_widget.dart';
 
 class LoginPage extends StatelessWidget {
   final LoginController controller = Get.find();
@@ -13,7 +14,7 @@ class LoginPage extends StatelessWidget {
           child: Container(
         alignment: Alignment.center,
         child: ListView(
-          padding: EdgeInsets.symmetric(horizontal: 30),
+          padding: const EdgeInsets.symmetric(horizontal: 30),
           shrinkWrap: true,
           children: [
             TextFormField(
@@ -29,21 +30,29 @@ class LoginPage extends StatelessWidget {
               keyboardType: TextInputType.text,
               decoration: const InputDecoration(label: Text('Senha')),
             ),
-            Container(
-                margin: const EdgeInsets.only(top: 10),
-                alignment: Alignment.center,
-                child: ElevatedButton(
-                  onPressed: () {
-                    controller.fazerLogin();
-                  },
-                  child: const Text('ENTRAR'),
-                  style: ElevatedButton.styleFrom(
-                      fixedSize: Size(Get.width, 45),
-                      primary: Colors.deepOrange),
-                )),
+            GetBuilder<LoginController>(
+              builder: (_) {
+                return Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    alignment: Alignment.center,
+                    child: ElevatedButton(
+                      onPressed: _.carregando
+                          ? null
+                          : () {
+                              controller.fazerLogin();
+                            },
+                      child: _.carregando
+                          ? const LoadingWidget()
+                          : const Text('ENTRAR'),
+                      style: ElevatedButton.styleFrom(
+                          fixedSize: Size(Get.width, 60),
+                          primary: Colors.deepOrange),
+                    ));
+              },
+            ),
             Container(
               child: TextButton(
-                child: Text('Primeiro acesso? Clique aqui.'),
+                child: const Text('Primeiro acesso? Clique aqui.'),
                 onPressed: () {
                   controller.irParaPrimeiroAcesso();
                 },
