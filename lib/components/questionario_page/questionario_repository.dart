@@ -6,6 +6,6 @@ class QuestionarioRepository {
   QuestionarioRepository({required this.firestoreProvider});
 
   Future<List<Questao>> getQuestionario([int? numQuestoes]) {
-    return firestoreProvider.getQuestionario(numQuestoes ?? 10);
+    return firestoreProvider.getQuestionario(numQuestoes ?? 30);
   }
 }

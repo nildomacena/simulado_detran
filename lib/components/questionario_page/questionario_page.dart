@@ -12,7 +12,7 @@ class QuestionarioPage extends StatelessWidget {
   final Widget titulo = GetBuilder<QuestionarioController>(
       builder: (_) => _.carregando
           ? const Text('Carregando questionário...')
-          : Text('Questão ${_.numQuestaoAtual}'));
+          : Text('Questão ${_.numQuestaoAtual}/${_.questionario!.length}'));
 
   @override
   Widget build(BuildContext context) {
