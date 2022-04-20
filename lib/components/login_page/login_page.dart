@@ -10,30 +10,47 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: TextField(
-              controller: controller.cpfTextController,
-              inputFormatters: [controller.maskFormatter],
-              decoration: const InputDecoration(label: Text('CPF')),
+          child: Container(
+        alignment: Alignment.center,
+        child: ListView(
+          padding: EdgeInsets.symmetric(horizontal: 30),
+          shrinkWrap: true,
+          children: [
+            TextFormField(
+              controller: controller.emailTextController,
+              validator: controller.validatorEmail,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(label: Text('Email')),
             ),
-          ),
-          Container(
-              padding: const EdgeInsets.symmetric(horizontal: 30),
-              margin: const EdgeInsets.only(top: 10),
-              alignment: Alignment.center,
-              child: ElevatedButton(
+            TextFormField(
+              validator: controller.validatorSenha,
+              controller: controller.senhaTextController,
+              obscureText: true,
+              keyboardType: TextInputType.text,
+              decoration: const InputDecoration(label: Text('Senha')),
+            ),
+            Container(
+                margin: const EdgeInsets.only(top: 10),
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  onPressed: () {
+                    controller.fazerLogin();
+                  },
+                  child: const Text('ENTRAR'),
+                  style: ElevatedButton.styleFrom(
+                      fixedSize: Size(Get.width, 45),
+                      primary: Colors.deepOrange),
+                )),
+            Container(
+              child: TextButton(
+                child: Text('Primeiro acesso? Clique aqui.'),
                 onPressed: () {
-                  controller.fazerLogin();
+                  controller.irParaPrimeiroAcesso();
                 },
-                child: const Text('ENTRAR'),
-                style: ElevatedButton.styleFrom(
-                    fixedSize: Size(Get.width, 45), primary: Colors.deepOrange),
-              ))
-        ],
+              ),
+            )
+          ],
+        ),
       )),
     );
   }
