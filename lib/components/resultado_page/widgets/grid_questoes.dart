@@ -26,7 +26,11 @@ class GridQuestoes extends StatelessWidget {
             return Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
-                  color: questao.acertou ? Colors.green : Colors.red),
+                  color: questao.resposta == null
+                      ? Colors.grey
+                      : questao.acertou
+                          ? Colors.green
+                          : Colors.red),
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
