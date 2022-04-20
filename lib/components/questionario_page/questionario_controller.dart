@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simulado_detran/components/questionario_page/questionario_repository.dart';
@@ -5,6 +7,7 @@ import 'package:simulado_detran/model/alternativa_model.dart';
 import 'package:simulado_detran/model/questao_model.dart';
 import 'package:simulado_detran/model/simulado_realizado_model.dart';
 import 'package:simulado_detran/routes/app_routes.dart';
+import 'package:simulado_detran/util/util_service.dart';
 
 class QuestionarioController extends GetxController {
   bool carregando = true;
@@ -12,9 +15,7 @@ class QuestionarioController extends GetxController {
   late Questao questaoAtual;
   Alternativa? alternativaSelecionada;
   final QuestionarioRepository repository;
-  QuestionarioController(this.repository) {
-    print('Questionario criado');
-  }
+  int segundosCountdown = 20;
 
   String get numQuestaoAtual =>
       questionario == null ? '' : '${questionario!.indexOf(questaoAtual) + 1}';
@@ -32,19 +33,48 @@ class QuestionarioController extends GetxController {
   int get questoesRespondidas => questionario == null
       ? 0
       : questionario!.where((q) => q.resposta != null).length;
+
+  String get minutosTimer => utilService.formatarSegundo(segundosCountdown);
+
+  bool get exibirWarning => segundosCountdown < 120;
+  late Timer timer;
+
+  QuestionarioController(this.repository);
+
   @override
-  onInit() {
+  onInit() async {
     super.onInit();
-    getQuestoes();
+    await getQuestoes();
+    initTimer();
   }
 
-  getQuestoes() async {
+  @override
+  onClose() {
+    super.onClose();
+    timer.cancel();
+  }
+
+  initTimer() {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      this.timer = timer;
+      segundosCountdown -= 1;
+      print('segundosCountdown: $segundosCountdown');
+      if (segundosCountdown <= 1) {
+        onFinalizaTimer(timer);
+        timer.cancel();
+      }
+      update();
+    });
+  }
+
+  Future getQuestoes() async {
     print('getQuestoes');
     questionario = await repository.getQuestionario();
     carregando = false;
     questaoAtual = questionario!.first;
     update();
     print('questionário: $questionario');
+    return;
   }
 
   avancarQuestao() {
@@ -65,6 +95,37 @@ class QuestionarioController extends GetxController {
       update();
       finalizarQuestionario();
     }
+  }
+
+  onFinalizaTimer([Timer? timer]) async {
+    if (timer != null) {
+      timer.cancel();
+    }
+    if (Get.isDialogOpen ?? false) Get.back();
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Acabou o tempo!'),
+        content: const Text(
+            'O período do simulado acabou! Deseja adicionar mais 5 minutos ou finalizar o simulado?'),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Get.back();
+                segundosCountdown += 10;
+                update();
+                initTimer();
+              },
+              child: const Text('Adicionar mais 5 minutos')),
+          TextButton(
+              onPressed: () {
+                Get.back();
+                finalizarQuestionario();
+              },
+              child: const Text('Finalizar simulado')),
+        ],
+      ),
+      barrierDismissible: false,
+    );
   }
 
   Future<bool> confirmaWillPop() async {
@@ -117,7 +178,7 @@ class QuestionarioController extends GetxController {
       ],
     ));
     if (result != null && result) {
-      //Get.back();
+      Get.back();
       Get.toNamed(Routes.resultado,
           arguments: SimuladoRealizado(questionario!));
     }

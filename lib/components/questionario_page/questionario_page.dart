@@ -13,12 +13,40 @@ class QuestionarioPage extends StatelessWidget {
       builder: (_) => _.carregando
           ? const Text('Carregando questionário...')
           : Text('Questão ${_.numQuestaoAtual}'));
+
   @override
   Widget build(BuildContext context) {
+    Widget cronometro = GetBuilder<QuestionarioController>(builder: (_) {
+      if (_.questionario == null) return Container();
+      return Row(
+        children: [
+          Text(
+            _.minutosTimer,
+            style: TextStyle(
+                fontSize: 25,
+                color: _.exibirWarning
+                    ? Color.fromARGB(255, 248, 30, 15)
+                    : Colors.white),
+          ),
+          Container(
+            margin: const EdgeInsets.only(left: 5),
+            child: _.exibirWarning
+                ? const Icon(Icons.warning,
+                    color: Color.fromARGB(255, 248, 30, 15))
+                : Container(),
+          )
+        ],
+      );
+    });
+
     return WillPopScope(
       onWillPop: controller.confirmaWillPop,
       child: Scaffold(
-        appBar: AppBar(title: titulo),
+        appBar: AppBar(
+          title: Row(
+            children: [titulo, Expanded(child: Container()), cronometro],
+          ),
+        ),
         body: Container(
           alignment: Alignment.center,
           child: GetBuilder<QuestionarioController>(
@@ -48,6 +76,7 @@ class QuestionarioPage extends StatelessWidget {
                       ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
+                          padding: const EdgeInsets.only(bottom: 100),
                           itemCount: 4,
                           itemBuilder: (context, index) {
                             Alternativa alternativa =

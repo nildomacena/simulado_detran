@@ -32,7 +32,7 @@ class UtilService {
   }
 
   bool checkValidadeAcesso(DateTime dataCadastro, int dias) {
-    return dataCadastro.millisecondsSinceEpoch + diasEmMilisseconds(dias) <
+    return dataCadastro.millisecondsSinceEpoch + diasEmMilisseconds(dias) >
         DateTime.now().millisecondsSinceEpoch;
   }
 
@@ -77,6 +77,12 @@ class UtilService {
         textColor: Colors.white,
         fontSize: 16.0 */
     );
+  }
+
+  String formatarSegundo(int segundos) {
+    String strMinutos = (segundos ~/ 60).toString().padLeft(2, '0');
+    String strSegundos = (segundos % 60).toString().padLeft(2, '0');
+    return '$strMinutos:$strSegundos';
   }
 }
 

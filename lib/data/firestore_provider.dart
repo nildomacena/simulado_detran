@@ -10,6 +10,16 @@ class FirestoreProvider {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  FirestoreProvider() {
+    print('user: ${_auth.currentUser}');
+    Future.delayed(Duration(seconds: 1))
+        .then((value) => print('user: ${_auth.currentUser}'));
+  }
+
+  bool estaLogado() {
+    return _auth.currentUser != null;
+  }
+
   Future<List<Categoria>> getCategorias() async {
     QuerySnapshot snapshot = await _firestore.collection('categorias').get();
     return snapshot.docs.map((e) => Categoria.fromFirestore(e)).toList();
@@ -30,6 +40,7 @@ class FirestoreProvider {
     return _firestore.doc('usuarios/${userCredential.user!.uid}').set({
       'email': email,
       'nome': nome,
+      'cpf': cpf,
       'dataCadastro': (querySnapshot.docs.first.data()
           as Map<String, dynamic>)['dataCadastro']
     });
@@ -44,6 +55,7 @@ class FirestoreProvider {
       throw AutenticacaoException(
           'Email ainda não cadastrado. Acesse a opção Primeiro Acesso');
     }
+    print('querySnapshot.docs.first: ${querySnapshot.docs.first.data()}');
     Usuario usuario = Usuario.fromFirestore(querySnapshot.docs.first);
     if (!utilService.checkValidadeAcesso(usuario.dataCadastro, 30)) {
       throw AutenticacaoException(

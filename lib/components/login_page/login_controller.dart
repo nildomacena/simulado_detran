@@ -29,9 +29,14 @@ class LoginController extends GetxController {
     print(hoje);
   }
 
-  /* fazerLogin() {
-    Get.offAllNamed(Routes.home);
-  } */
+  @override
+  onInit() {
+    super.onInit();
+    if (repository.estaLogado()) {
+      Future.delayed(Duration(seconds: 1))
+          .then((value) => Get.offAllNamed(Routes.home));
+    }
+  }
 
   irParaPrimeiroAcesso() {
     Get.to(() => PrimeiroAcessoPage(), fullscreenDialog: true);
@@ -58,9 +63,9 @@ class LoginController extends GetxController {
   String? validatorSenha(String? value) {
     if (value == null || value.isEmpty) return 'Digite a senha';
     if (value.length < 5) return 'A senha deve ter no mínimo 6 caracteres';
-    if (value != confirmaSenhaTextController.text) {
+    /* if (value != confirmaSenhaTextController.text) {
       return 'As senhas devem ser iguais';
-    }
+    } */
     return null;
   }
 
@@ -74,16 +79,24 @@ class LoginController extends GetxController {
   }
 
   fazerLogin() async {
+    if (!formKeyLogin.currentState!.validate()) {
+      print('Criar usuário válido');
+      utilService.snackBarErro(
+          mensagem: 'Preencha as informações corretamente.');
+      return;
+    }
     carregando = true;
     update();
     try {
       await repository.fazerLogin(
           emailTextController.text, senhaTextController.text);
+      utilService.showToast('Bem vindo de volta!');
       Get.offAllNamed(Routes.home);
     } on AutenticacaoException catch (e) {
       utilService.snackBarErro(mensagem: e.mensagem);
     } catch (e) {
       utilService.snackBarErro(mensagem: 'Ocorreu um erro durante o login');
+      print('Erro ao fazer login: $e');
     } finally {
       carregando = false;
       update();

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simulado_detran/components/questionario_page/questionario_controller.dart';
+import 'package:simulado_detran/components/resultado_page/resultado_controller.dart';
 import 'package:simulado_detran/model/alternativa_model.dart';
 
 class AlternativaContainer extends StatelessWidget {
   final Alternativa alternativa;
   final Function? onPressed;
   final String letra;
-  final QuestionarioController controller;
+  final ResultadoController controller;
   final bool? correta;
   final bool? incorreta;
 
@@ -23,8 +24,8 @@ class AlternativaContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<QuestionarioController>(builder: (_) {
-      bool alternativaSelecionada = _.questaoAtual.resposta == alternativa;
+    return GetBuilder<ResultadoController>(builder: (_) {
+      //final bool alternativaSelecionada = _.questaoAtual.resposta == alternativa;
       return Material(
         color: Colors.white,
         /*  color: correta != null && correta!

@@ -15,10 +15,62 @@ class HomePage extends StatelessWidget {
         fit: StackFit.expand,
         alignment: Alignment.center,
         children: [
+          ListView(
+            shrinkWrap: true,
+            children: [
+              Container(
+                margin:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                width: Get.width,
+                height: 100,
+                child: ElevatedButton(
+                  child: const Text(
+                    'FAZER SIMULADO TRADICIONAL',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  /*  style: ElevatedButton.styleFrom(
+                      maximumSize: Size(Get.width * .5, 50)), */
+                  onPressed: () {
+                    controller.irParaQuestionario();
+                  },
+                ),
+              ),
+              Container(
+                margin:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                width: Get.width,
+                height: 100,
+                child: ElevatedButton(
+                  child: const Text(
+                    'RESPONDER UMA QUESTÃO POR VEZ',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  /*  style: ElevatedButton.styleFrom(
+                      maximumSize: Size(Get.width * .5, 50)), */
+                  onPressed: () {},
+                ),
+              ),
+              Container(
+                margin:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                width: Get.width,
+                height: 100,
+                child: ElevatedButton(
+                  child: const Text(
+                    'VER HISTÓRICO',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  /*  style: ElevatedButton.styleFrom(
+                      maximumSize: Size(Get.width * .5, 50)), */
+                  onPressed: () {},
+                ),
+              ),
+            ],
+          ),
           Positioned(
               bottom: 10,
               child: ElevatedButton(
-                child: Text('Iniciar Questionário'),
+                child: const Text('Iniciar Questionário'),
                 /*  style: ElevatedButton.styleFrom(
                     maximumSize: Size(Get.width * .5, 50)), */
                 onPressed: () {

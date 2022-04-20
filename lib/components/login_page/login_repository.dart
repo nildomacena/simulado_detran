@@ -19,4 +19,8 @@ class LoginRepository {
     }
     return firestoreProvider.criarUsuario(email, nome, cpf, senha);
   }
+
+  bool estaLogado() {
+    return firestoreProvider.estaLogado();
+  }
 }
