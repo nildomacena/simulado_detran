@@ -170,10 +170,17 @@ class QuestionarioController extends GetxController {
   }
 
   finalizarQuestionario() async {
-    if (avulso && alternativaSelecionada == null) {
+    if (questionario == null ||
+        questionario!.where((q) => q.resposta != null).isEmpty) {
+      Get.back();
+      return;
+    }
+
+    if (avulso && questionario!.last.resposta == null) {
       //Verifica se é questão avulso e se o usuário não selecionou a última resposta
       questionario!.removeLast();
     }
+
     bool? result = await Get.dialog(AlertDialog(
       title: const Text('Finalizar Questionário'),
       content: SizedBox(
@@ -203,6 +210,7 @@ class QuestionarioController extends GetxController {
     ));
     if (result != null && result) {
       Get.back();
+      repository.finalizarQuestionario(questionario!);
       Get.toNamed(Routes.resultado,
           arguments: SimuladoRealizado(questionario!));
     }

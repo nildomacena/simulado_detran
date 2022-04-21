@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:simulado_detran/model/resultado_questionario_model.dart';
 import 'package:simulado_detran/util/util_service.dart';
 import 'package:simulado_detran/exceptions/auth_exceptions.dart';
 import 'package:simulado_detran/model/categoria_model.dart';
 import 'package:simulado_detran/model/questao_model.dart';
 import 'package:simulado_detran/model/usuario_model.dart';
+import 'package:stream_transform/stream_transform.dart';
 
 class FirestoreProvider {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -91,6 +93,18 @@ class FirestoreProvider {
         await _firestore.doc('usuarios/${_auth.currentUser!.uid}').get());
   }
 
+  Stream<List<ResultadoQuestionario>> streamResultado() {
+    return _auth.authStateChanges().asyncExpand((user) => user == null
+        ? null
+        : _firestore
+            .collection('usuarios/${user.uid}/resultadosQuestionarios')
+            .snapshots()
+            .map((querySnapshot) => querySnapshot.docs
+                .map(
+                    (snapshot) => ResultadoQuestionario.fromFirestore(snapshot))
+                .toList()));
+  }
+
   Future<bool> checkUsuario(String cpf) async {
     QuerySnapshot querySnapshot = await _firestore
         .collection('usuarios')
@@ -153,5 +167,26 @@ class FirestoreProvider {
           .get();
     }
     return Questao.fromFirestore(querySnapshot.docs.first);
+  }
+
+  salvarQuestionarioRespondido(
+    int totalQuestoes,
+    int totalRespostas,
+    int totalAcertos,
+  ) async {
+    Usuario? usuario = await getUsuario();
+    if (usuario == null) {
+      throw AutenticacaoException(
+          'Você precisa estar logado para acessar essa opção');
+    }
+    _firestore
+        .collection('usuarios/${usuario.uid}/resultadosQuestionarios')
+        .add({
+      'totalQuestoes': totalQuestoes,
+      'totalRespostas': totalRespostas,
+      'totalAcertos': totalAcertos,
+      'data': FieldValue.serverTimestamp()
+    });
+    //print('questionario: ${questionario.first.asMap}');
   }
 }

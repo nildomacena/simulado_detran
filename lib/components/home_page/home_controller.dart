@@ -1,10 +1,21 @@
 import 'package:get/get.dart';
 import 'package:simulado_detran/components/home_page/home_repository.dart';
+import 'package:simulado_detran/model/resultado_questionario_model.dart';
 import 'package:simulado_detran/routes/app_routes.dart';
 
 class HomeController extends GetxController {
   final HomeRepository repository;
-  HomeController(this.repository);
+  final RxList<ResultadoQuestionario> _resultados =
+      RxList<ResultadoQuestionario>();
+
+  List<ResultadoQuestionario> get resultados => _resultados.toList();
+
+  HomeController(this.repository) {
+    _resultados.bindStream(repository.streamResultados());
+    /* resultados.listen((resultados) {
+      print('resultados: $resultados');
+    }); */
+  }
 
   irParaSimulado() {
     Get.toNamed(Routes.questionario,
