@@ -11,8 +11,10 @@ class QuestionarioPage extends StatelessWidget {
 
   final Widget titulo = GetBuilder<QuestionarioController>(
       builder: (_) => _.carregando
-          ? const Text('Carregando questionário...')
-          : Text('Questão ${_.numQuestaoAtual}/${_.questionario!.length}'));
+          ? Text(
+              _.simulado ? 'Carregando questionário...' : 'Buscando questão...')
+          : Text(
+              'Questão ${_.numQuestaoAtual}${_.simulado ? '/' + _.questionario!.length.toString() : ''}'));
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +27,7 @@ class QuestionarioPage extends StatelessWidget {
             style: TextStyle(
                 fontSize: 25,
                 color: _.exibirWarning
-                    ? Color.fromARGB(255, 248, 30, 15)
+                    ? const Color.fromARGB(255, 248, 30, 15)
                     : Colors.white),
           ),
           Container(
@@ -100,7 +102,7 @@ class QuestionarioPage extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            if (!_.primeiraQuestao)
+                            if (!_.primeiraQuestao && _.simulado)
                               FloatingActionButton(
                                 heroTag: 'btnVoltar',
                                 child: const Icon(Icons.arrow_left),
@@ -120,8 +122,8 @@ class QuestionarioPage extends StatelessWidget {
                                 },
                               ),
                             )),
-                            if ((!_.ultimaQuestao &&
-                                    _.questaoAtual.resposta == null) ||
+                            if (!_.ultimaQuestao &&
+                                _.questaoAtual.resposta == null &&
                                 !_.avulso)
                               FloatingActionButton(
                                 heroTag: 'btnAvancar',

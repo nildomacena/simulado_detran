@@ -21,16 +21,26 @@ class LoginPage extends StatelessWidget {
             children: [
               TextFormField(
                 controller: controller.emailTextController,
+                focusNode: controller.focusEmail,
                 validator: controller.validatorEmail,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(label: Text('Email')),
+                textInputAction: TextInputAction.next,
+                onFieldSubmitted: (str) {
+                  controller.onSubmitEmail();
+                },
               ),
               TextFormField(
                 validator: controller.validatorSenha,
                 controller: controller.senhaTextController,
                 obscureText: true,
+                focusNode: controller.focusSenha,
                 keyboardType: TextInputType.text,
                 decoration: const InputDecoration(label: Text('Senha')),
+                textInputAction: TextInputAction.send,
+                onFieldSubmitted: (str) {
+                  controller.onSubmitSenha();
+                },
               ),
               const SizedBox(
                 height: 10,

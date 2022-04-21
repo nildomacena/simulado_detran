@@ -17,6 +17,14 @@ class LoginController extends GetxController {
   TextEditingController senhaTextController = TextEditingController();
   TextEditingController confirmaSenhaTextController = TextEditingController();
 
+  FocusNode focusCpf = FocusNode();
+  FocusNode focusNome = FocusNode();
+  FocusNode focusEmail = FocusNode();
+  FocusNode focusSenha = FocusNode();
+  FocusNode focusConfirmaSenha = FocusNode();
+
+  bool primeiroAcesso = false;
+
   MaskTextInputFormatter maskFormatter = MaskTextInputFormatter(
     mask: '###.###.###-##',
   );
@@ -33,13 +41,15 @@ class LoginController extends GetxController {
   onInit() {
     super.onInit();
     if (repository.estaLogado()) {
-      Future.delayed(Duration(seconds: 1))
+      Future.delayed(const Duration(seconds: 1))
           .then((value) => Get.offAllNamed(Routes.home));
     }
   }
 
-  irParaPrimeiroAcesso() {
+  irParaPrimeiroAcesso() async {
+    primeiroAcesso = true;
     Get.to(() => PrimeiroAcessoPage(), fullscreenDialog: true);
+    primeiroAcesso = false;
   }
 
   String? validatorCpf(String? value) {
@@ -63,9 +73,9 @@ class LoginController extends GetxController {
   String? validatorSenha(String? value) {
     if (value == null || value.isEmpty) return 'Digite a senha';
     if (value.length < 5) return 'A senha deve ter no mínimo 6 caracteres';
-    /* if (value != confirmaSenhaTextController.text) {
+    if (value != confirmaSenhaTextController.text && primeiroAcesso) {
       return 'As senhas devem ser iguais';
-    } */
+    }
     return null;
   }
 
@@ -76,6 +86,36 @@ class LoginController extends GetxController {
       return 'As senhas devem ser iguais';
     }
     return null;
+  }
+
+  onSubmitEmail() {
+    focusEmail.unfocus();
+    focusSenha.requestFocus();
+  }
+
+  onSubmitNome() {
+    focusNome.unfocus();
+    focusEmail.requestFocus();
+  }
+
+  onSubmitSenha() {
+    if (primeiroAcesso) {
+      focusSenha.unfocus();
+      focusConfirmaSenha.requestFocus();
+    } else {
+      focusSenha.unfocus();
+      fazerLogin();
+    }
+  }
+
+  onSubmitCpf() {
+    focusCpf.unfocus();
+    focusNome.requestFocus();
+  }
+
+  onSubmitConfirmaSenha() {
+    focusConfirmaSenha.unfocus();
+    criarUsuario();
   }
 
   fazerLogin() async {
