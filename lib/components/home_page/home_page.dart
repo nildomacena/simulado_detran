@@ -31,7 +31,7 @@ class HomePage extends StatelessWidget {
                   /*  style: ElevatedButton.styleFrom(
                       maximumSize: Size(Get.width * .5, 50)), */
                   onPressed: () {
-                    controller.irParaQuestionario();
+                    controller.irParaSimulado();
                   },
                 ),
               ),
@@ -47,7 +47,9 @@ class HomePage extends StatelessWidget {
                   ),
                   /*  style: ElevatedButton.styleFrom(
                       maximumSize: Size(Get.width * .5, 50)), */
-                  onPressed: () {},
+                  onPressed: () {
+                    controller.irParaAvulso();
+                  },
                 ),
               ),
               Container(
@@ -74,7 +76,7 @@ class HomePage extends StatelessWidget {
                 /*  style: ElevatedButton.styleFrom(
                     maximumSize: Size(Get.width * .5, 50)), */
                 onPressed: () {
-                  controller.irParaQuestionario();
+                  controller.irParaSimulado();
                 },
               ))
         ],

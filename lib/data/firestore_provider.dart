@@ -124,13 +124,14 @@ class FirestoreProvider {
     return questoes;
   }
 
-  Future<Questao?> addQuestao(List<Questao> questoes) async {
+  Future<Questao> addQuestao(List<Questao> questoes) async {
     Questao questao = await getQuestaoAleatoria();
     if (questoes.where((Questao q) => q.id == questao.id).isEmpty) {
       return questao;
     } else {
-      addQuestao(questoes);
-      return Future.value(null);
+      print('achou questao igual');
+      return addQuestao(questoes);
+      //return Future.value(null);
     }
   }
 

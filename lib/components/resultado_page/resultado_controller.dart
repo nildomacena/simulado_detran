@@ -29,7 +29,7 @@ class ResultadoController extends GetxController {
   selecionarQuestao(Questao questao) {
     questaoSelecionada = questaoSelecionada == questao ? null : questao;
     if (questaoSelecionada != null) {
-      scrollController.animateTo(400,
+      scrollController.animateTo(600,
           curve: Curves.linear, duration: const Duration(milliseconds: 400));
     }
     update();

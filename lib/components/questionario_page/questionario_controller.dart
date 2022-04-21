@@ -16,8 +16,8 @@ class QuestionarioController extends GetxController {
   Alternativa? alternativaSelecionada;
   final QuestionarioRepository repository;
   int segundosCountdown = 1800;
-  late bool simulado;
-  late bool avulso;
+  bool simulado = true;
+  bool avulso = false;
 
   String get numQuestaoAtual =>
       questionario == null ? '' : '${questionario!.indexOf(questaoAtual) + 1}';
@@ -39,27 +39,27 @@ class QuestionarioController extends GetxController {
   String get minutosTimer => utilService.formatarSegundo(segundosCountdown);
 
   bool get exibirWarning => segundosCountdown < 120;
-  late Timer timer;
+  Timer? timer;
 
   QuestionarioController(this.repository);
 
   @override
   onInit() async {
     super.onInit();
-    await getQuestoes();
     if (Get.arguments != null && Get.arguments['simulado'] != null) {
       simulado = Get.arguments['simulado'];
     }
     if (Get.arguments != null && Get.arguments['avulso'] != null) {
-      simulado = Get.arguments['avulso'];
+      avulso = Get.arguments['avulso'];
     }
-    initTimer();
+    await getQuestoes();
+    if (simulado) initTimer();
   }
 
   @override
   onClose() {
     super.onClose();
-    timer.cancel();
+    if (timer != null) timer!.cancel();
   }
 
   initTimer() {
@@ -76,8 +76,12 @@ class QuestionarioController extends GetxController {
   }
 
   Future getQuestoes() async {
-    print('getQuestoes');
-    questionario = await repository.getQuestionario();
+    print('getQuestoes simulado: $simulado - avulso: $avulso');
+    if (simulado) {
+      questionario = await repository.getQuestionario();
+    } else {
+      questionario = await repository.getQuestionarioAvulso();
+    }
     carregando = false;
     questaoAtual = questionario!.first;
     update();
@@ -85,7 +89,15 @@ class QuestionarioController extends GetxController {
     return;
   }
 
-  avancarQuestao() {
+  avancarQuestao() async {
+    print('avancar questao');
+    if (avulso) {
+      carregando = true;
+      update();
+      questionario = await repository.getProximaQuestaoAvulsa(questionario!);
+      carregando = false;
+      update();
+    }
     questaoAtual = questionario![questionario!.indexOf(questaoAtual) + 1];
     alternativaSelecionada = null;
     update();
@@ -97,7 +109,7 @@ class QuestionarioController extends GetxController {
   }
 
   responderQuestao() {
-    if (questaoAtual != questionario!.last) {
+    if (questaoAtual != questionario!.last || avulso) {
       avancarQuestao();
     } else {
       update();
@@ -158,6 +170,10 @@ class QuestionarioController extends GetxController {
   }
 
   finalizarQuestionario() async {
+    if (avulso && alternativaSelecionada == null) {
+      //Verifica se é questão avulso e se o usuário não selecionou a última resposta
+      questionario!.removeLast();
+    }
     bool? result = await Get.dialog(AlertDialog(
       title: const Text('Finalizar Questionário'),
       content: SizedBox(

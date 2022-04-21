@@ -19,7 +19,10 @@ class GridQuestoes extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4, crossAxisSpacing: 2, mainAxisSpacing: 2),
+              childAspectRatio: 1.4,
+              crossAxisCount: 4,
+              crossAxisSpacing: 2,
+              mainAxisSpacing: 2),
           itemBuilder: (context, index) {
             Questao questao = simuladoRealizado.questionario[index];
 

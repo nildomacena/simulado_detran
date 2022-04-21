@@ -17,7 +17,7 @@ class QuestionarioPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget cronometro = GetBuilder<QuestionarioController>(builder: (_) {
-      if (_.questionario == null) return Container();
+      if (_.questionario == null || _.avulso) return Container();
       return Row(
         children: [
           Text(
@@ -120,8 +120,9 @@ class QuestionarioPage extends StatelessWidget {
                                 },
                               ),
                             )),
-                            if (!_.ultimaQuestao &&
-                                _.questaoAtual.resposta == null)
+                            if ((!_.ultimaQuestao &&
+                                    _.questaoAtual.resposta == null) ||
+                                !_.avulso)
                               FloatingActionButton(
                                 heroTag: 'btnAvancar',
                                 child: const Icon(Icons.arrow_right),

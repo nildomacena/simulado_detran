@@ -6,7 +6,13 @@ class HomeController extends GetxController {
   final HomeRepository repository;
   HomeController(this.repository);
 
-  irParaQuestionario() {
-    Get.toNamed(Routes.questionario);
+  irParaSimulado() {
+    Get.toNamed(Routes.questionario,
+        arguments: {'simulado': true, 'avulso': false});
+  }
+
+  irParaAvulso() {
+    Get.toNamed(Routes.questionario,
+        arguments: {'simulado': false, 'avulso': true});
   }
 }
