@@ -37,6 +37,17 @@ class Questao {
         imagem: data['imagem']);
   }
 
+  Map<String, dynamic> get asMap {
+    return {
+      'id': id,
+      'enunciado': enunciado,
+      'imagem': imagem,
+      'alternativas': alternativas.map((a) => a.asMap),
+      'categoria': categoria.asMap,
+      'resposta': resposta?.asMap ?? '',
+    };
+  }
+
   @override
   String toString() {
     return id;
