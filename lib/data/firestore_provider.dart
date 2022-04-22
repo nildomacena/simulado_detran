@@ -93,18 +93,6 @@ class FirestoreProvider {
         await _firestore.doc('usuarios/${_auth.currentUser!.uid}').get());
   }
 
-  Stream<List<ResultadoQuestionario>> streamResultado() {
-    return _auth.authStateChanges().asyncExpand((user) => user == null
-        ? null
-        : _firestore
-            .collection('usuarios/${user.uid}/resultadosQuestionarios')
-            .snapshots()
-            .map((querySnapshot) => querySnapshot.docs
-                .map(
-                    (snapshot) => ResultadoQuestionario.fromFirestore(snapshot))
-                .toList()));
-  }
-
   Future<bool> checkUsuario(String cpf) async {
     QuerySnapshot querySnapshot = await _firestore
         .collection('usuarios')
@@ -167,6 +155,19 @@ class FirestoreProvider {
           .get();
     }
     return Questao.fromFirestore(querySnapshot.docs.first);
+  }
+
+  Stream<List<ResultadoQuestionario>> streamResultado() {
+    return _auth.authStateChanges().asyncExpand((user) => user == null
+        ? null
+        : _firestore
+            .collection('usuarios/${user.uid}/resultadosQuestionarios')
+            .orderBy('data')
+            .snapshots()
+            .map((querySnapshot) => querySnapshot.docs
+                .map(
+                    (snapshot) => ResultadoQuestionario.fromFirestore(snapshot))
+                .toList()));
   }
 
   salvarQuestionarioRespondido(

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:simulado_detran/components/home_page/home_controller.dart';
 import 'package:charts_flutter/flutter.dart' as chart;
 import 'package:simulado_detran/model/resultado_questionario_model.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class HomePage extends StatelessWidget {
   final HomeController controller = Get.find();
@@ -10,6 +11,39 @@ class HomePage extends StatelessWidget {
   HomePage({Key? key}) : super(key: key);
 
   Widget grafico() => GetX<HomeController>(builder: (_) {
+        if (_.resultados.isEmpty) return Container();
+        return Container(
+          margin: const EdgeInsets.only(top: 10),
+          child: SfCartesianChart(
+              title: ChartTitle(text: 'Acertos em %'),
+              zoomPanBehavior: ZoomPanBehavior(
+                  // Enables pinch zooming
+                  enablePinching: true),
+              primaryXAxis: NumericAxis(
+                decimalPlaces: 1,
+              ),
+              primaryYAxis: NumericAxis(
+                  maximum: 100,
+                  enableAutoIntervalOnZooming: true,
+                  axisLabelFormatter: (AxisLabelRenderDetails label) =>
+                      ChartAxisLabel(label.text + '%', TextStyle())),
+              series: <ChartSeries>[
+                // Renders line chart
+                LineSeries<ResultadoQuestionario, num>(
+                    dataSource: _.resultados,
+                    yAxisName: '%',
+                    xValueMapper: (ResultadoQuestionario resultado, __) =>
+                        _.resultados.indexOf(resultado),
+                    yValueMapper: (ResultadoQuestionario resultado, __) =>
+                        resultado.porcentagemArredondada,
+                    dataLabelSettings: const DataLabelSettings(isVisible: true),
+                    markerSettings: const MarkerSettings(isVisible: true),
+                    animationDuration: 1)
+              ]),
+        );
+      });
+
+  Widget graficobkp() => GetX<HomeController>(builder: (_) {
         if (_.resultados.isEmpty) return Container();
         print('GetX resultados: ${_.resultados.length}');
 
@@ -19,8 +53,12 @@ class HomePage extends StatelessWidget {
           data: _.resultados,
           id: 'resultados',
           displayName: 'Teste',
-          labelAccessorFn: (ResultadoQuestionario resultado, __) =>
-              'sadfsdafas',
+          domainFormatterFn: (ResultadoQuestionario resultado, __) =>
+              (teste) => 'asdfas',
+          insideLabelStyleAccessorFn: (ResultadoQuestionario resultado, __) =>
+              const chart.TextStyleSpec(fontSize: 18),
+          labelAccessorFn: (ResultadoQuestionario resultado, __) => '%',
+          domainUpperBoundFn: (ResultadoQuestionario resultado, __) => '100',
           domainFn: (ResultadoQuestionario resultado, __) =>
               _.resultados.indexOf(resultado).toString(),
           measureFn: (ResultadoQuestionario resultado, __) =>
@@ -50,10 +88,13 @@ class HomePage extends StatelessWidget {
               return 1;
             }));
         */
-        return chart.BarChart(
-          seriesList,
-          // animate: animate,
-          /* defaultRenderer: chart.LineRendererConfig(includePoints: true) */
+        return Container(
+          margin: const EdgeInsets.all(20),
+          child: chart.BarChart(
+            seriesList,
+            animate: true,
+            defaultRenderer: chart.BarRendererConfig(),
+          ),
         );
         /* return chart.LineChart(seriesList,
             // animate: animate,
@@ -71,7 +112,7 @@ class HomePage extends StatelessWidget {
           ListView(
             shrinkWrap: true,
             children: [
-              SizedBox(height: 200, width: Get.width, child: grafico()),
+              SizedBox(height: 250, width: Get.width, child: grafico()),
               Container(
                 margin:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -80,6 +121,7 @@ class HomePage extends StatelessWidget {
                 child: ElevatedButton(
                   child: const Text(
                     'FAZER SIMULADO TRADICIONAL',
+                    textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 20),
                   ),
                   /*  style: ElevatedButton.styleFrom(
@@ -96,7 +138,8 @@ class HomePage extends StatelessWidget {
                 height: 100,
                 child: ElevatedButton(
                   child: const Text(
-                    'RESPONDER UMA QUESTÃO POR VEZ',
+                    'RESPONDER QUESTÕES AVULSAS',
+                    textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 20),
                   ),
                   /*  style: ElevatedButton.styleFrom(
@@ -114,6 +157,7 @@ class HomePage extends StatelessWidget {
                 child: ElevatedButton(
                   child: const Text(
                     'VER HISTÓRICO',
+                    textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 20),
                   ),
                   /*  style: ElevatedButton.styleFrom(

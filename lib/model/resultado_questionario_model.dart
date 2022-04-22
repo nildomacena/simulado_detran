@@ -10,6 +10,9 @@ class ResultadoQuestionario {
   String get dataFormatada =>
       '${(data.day).toString().padLeft(2, '0')}/${data.month.toString().padLeft(2, '0')}';
 
+  num get porcentagemArredondada =>
+      (totalAcertos / totalQuestoes * 100).floorToDouble();
+
   ResultadoQuestionario(
       {required this.id,
       required this.totalQuestoes,
