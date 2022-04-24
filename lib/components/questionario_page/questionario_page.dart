@@ -61,14 +61,18 @@ class QuestionarioPage extends StatelessWidget {
                 children: [
                   ListView(
                     children: [
-                      Container(
-                          margin: const EdgeInsets.only(
-                              left: 10, right: 10, top: 20, bottom: 10),
-                          child: Text(
-                            _.questaoAtual.enunciado,
-                            textAlign: TextAlign.justify,
-                            style: const TextStyle(fontSize: 18),
-                          )),
+                      Card(
+                        margin: const EdgeInsets.only(
+                            top: 10, left: 10, right: 10, bottom: 0),
+                        child: Container(
+                            margin: const EdgeInsets.only(
+                                left: 10, right: 10, top: 10, bottom: 10),
+                            child: Text(
+                              _.questaoAtual.enunciado,
+                              textAlign: TextAlign.justify,
+                              style: const TextStyle(fontSize: 16),
+                            )),
+                      ),
                       if (_.questaoAtual.imagem != null &&
                           _.questaoAtual.imagem!.isNotEmpty)
                         SizedBox(

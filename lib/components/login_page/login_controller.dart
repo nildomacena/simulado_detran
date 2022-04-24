@@ -42,7 +42,7 @@ class LoginController extends GetxController {
     super.onInit();
     if (repository.estaLogado()) {
       Future.delayed(const Duration(seconds: 1))
-          .then((value) => Get.offAllNamed(Routes.home));
+          .then((value) => Get.offAllNamed(Routes.tabs));
     }
   }
 
@@ -131,7 +131,7 @@ class LoginController extends GetxController {
       await repository.fazerLogin(
           emailTextController.text, senhaTextController.text);
       utilService.showToast('Bem vindo de volta!');
-      Get.offAllNamed(Routes.home);
+      Get.offAllNamed(Routes.tabs);
     } on AutenticacaoException catch (e) {
       utilService.snackBarErro(mensagem: e.mensagem);
     } catch (e) {
@@ -160,7 +160,7 @@ class LoginController extends GetxController {
           nomeTextController.text,
           maskFormatter.getUnmaskedText());
       utilService.showToast('Usuário criado!');
-      Get.offAllNamed(Routes.home);
+      Get.offAllNamed(Routes.tabs);
     } on AutenticacaoException catch (e) {
       utilService.snackBarErro(mensagem: e.mensagem);
     } catch (e) {

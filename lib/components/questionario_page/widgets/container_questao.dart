@@ -15,35 +15,39 @@ class ContainerQuestao extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      shrinkWrap: true,
-      children: [
-        Container(
-            margin:
-                const EdgeInsets.only(left: 10, right: 10, top: 20, bottom: 10),
-            child: Text(
-              questao.enunciado,
-              textAlign: TextAlign.justify,
-              style: const TextStyle(fontSize: 18),
-            )),
-        if (questao.imagem != null && questao.imagem!.isNotEmpty)
-          SizedBox(height: 100, child: Image.network(questao.imagem!)),
-        const Divider(),
-        ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 4,
-            itemBuilder: (context, index) {
-              Alternativa alternativa = questao.alternativas[index];
-              return AlternativaContainer(
-                  alternativa: alternativa,
-                  controller: Get.find(),
-                  letra: utilService.intParaLetra(index),
-                  onPressed: () {
-                    // _.selecionaAlternativa(alternativa);
-                  });
-            })
-      ],
+    return Card(
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          Card(
+            child: Container(
+                margin: const EdgeInsets.only(
+                    left: 10, right: 10, top: 20, bottom: 10),
+                child: Text(
+                  'asldfkçldsa' + questao.enunciado,
+                  textAlign: TextAlign.justify,
+                  style: const TextStyle(fontSize: 18),
+                )),
+          ),
+          if (questao.imagem != null && questao.imagem!.isNotEmpty)
+            SizedBox(height: 100, child: Image.network(questao.imagem!)),
+          const Divider(),
+          ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 4,
+              itemBuilder: (context, index) {
+                Alternativa alternativa = questao.alternativas[index];
+                return AlternativaContainer(
+                    alternativa: alternativa,
+                    controller: Get.find(),
+                    letra: utilService.intParaLetra(index),
+                    onPressed: () {
+                      // _.selecionaAlternativa(alternativa);
+                    });
+              })
+        ],
+      ),
     );
   }
 }

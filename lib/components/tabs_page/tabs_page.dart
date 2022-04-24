@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:simulado_detran/components/home_page/home_page.dart';
+import 'package:simulado_detran/components/progresso_page/progresso_page.dart';
 import 'package:simulado_detran/components/tabs_page/tabs_controller.dart';
 
 class TabsPage extends StatelessWidget {
@@ -18,11 +19,11 @@ class TabsPage extends StatelessWidget {
                   currentIndex: controller.tabIndex,
                   items: [
                     SalomonBottomBarItem(
-                        icon: const Icon(LineIcons.search),
-                        title: const Text("Buscar")),
+                        icon: const Icon(LineIcons.check),
+                        title: const Text("Questionário")),
                     SalomonBottomBarItem(
-                        icon: const Icon(LineIcons.list),
-                        title: const Text("Lista de Compras")),
+                        icon: const Icon(LineIcons.barChart),
+                        title: const Text("Seu progresso")),
                     SalomonBottomBarItem(
                         icon: const Icon(LineIcons.barcode),
                         title: const Text("Ler Cód. de Barras")),
@@ -42,9 +43,7 @@ class TabsPage extends StatelessWidget {
                 index: controller.tabIndex,
                 children: [
                   HomePage(),
-                  Container(
-                    color: Colors.blue,
-                  ),
+                  ProgressoPage(),
                   Container(color: Colors.red),
                   Container(color: Colors.blue),
                 ],

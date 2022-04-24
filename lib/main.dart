@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       initialBinding: InitialBinding(),
-      initialRoute: Routes.tabs,
+      initialRoute: Routes.login,
       getPages: AppPages.routes,
       title: 'Simulador Detran',
       theme: ThemeData(
