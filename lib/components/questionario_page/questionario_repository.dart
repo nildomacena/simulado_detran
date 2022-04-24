@@ -1,5 +1,6 @@
 import 'package:simulado_detran/components/resultado_page/resultado_controller.dart';
 import 'package:simulado_detran/data/firestore_provider.dart';
+import 'package:simulado_detran/model/categoria_model.dart';
 import 'package:simulado_detran/model/questao_model.dart';
 import 'package:simulado_detran/model/resultado_questionario_model.dart';
 
@@ -11,14 +12,15 @@ class QuestionarioRepository {
     return firestoreProvider.getQuestionario(numQuestoes ?? 10);
   }
 
-  Future<List<Questao>> getQuestionarioAvulso() async {
-    Questao questao = await firestoreProvider.getQuestaoAleatoria();
+  Future<List<Questao>> getQuestionarioAvulso([Categoria? categoria]) async {
+    Questao questao = await firestoreProvider.getQuestaoAleatoria(categoria);
     return [questao];
   }
 
-  Future<List<Questao>> getProximaQuestaoAvulsa(
-      List<Questao> questionario) async {
-    Questao questao = (await firestoreProvider.addQuestao(questionario));
+  Future<List<Questao>> getProximaQuestaoAvulsa(List<Questao> questionario,
+      [Categoria? categoria]) async {
+    Questao questao =
+        (await firestoreProvider.addQuestao(questionario, categoria));
 
     return [...questionario, questao];
   }

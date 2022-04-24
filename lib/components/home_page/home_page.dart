@@ -5,6 +5,7 @@ import 'package:charts_flutter/flutter.dart' as chart;
 import 'package:simulado_detran/components/home_page/widgets/icone_menu_container.dart';
 import 'package:simulado_detran/components/home_page/widgets/icone_menu_model.dart';
 import 'package:simulado_detran/model/resultado_questionario_model.dart';
+import 'package:simulado_detran/widgets/loading_widget.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class HomePage extends StatelessWidget {
@@ -20,18 +21,28 @@ class HomePage extends StatelessWidget {
         fit: StackFit.expand,
         alignment: Alignment.center,
         children: [
-          GridView.count(
-            crossAxisCount: 2,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            shrinkWrap: true,
-            children: controller
-                .generateMenuItens()
-                .map((i) => IconeMenuContainer(
-                      icone: i,
-                    ))
-                .toList(),
+          GetBuilder<HomeController>(
+            builder: (_) {
+              if (_.categorias.isEmpty) {
+                return const Center(
+                  child: LoadingWidget(),
+                );
+              }
+              return GridView.count(
+                crossAxisCount: 2,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                shrinkWrap: true,
+                children: controller
+                    .generateMenuItens()
+                    .map((i) => IconeMenuContainer(
+                          icone: i,
+                        ))
+                    .toList(),
+              );
+            },
           ),
           /* ListView(
             shrinkWrap: true,

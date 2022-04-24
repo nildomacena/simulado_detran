@@ -126,33 +126,54 @@ class FirestoreProvider {
     return questoes;
   }
 
-  Future<Questao> addQuestao(List<Questao> questoes) async {
-    Questao questao = await getQuestaoAleatoria();
+  Future<Questao> addQuestao(List<Questao> questoes,
+      [Categoria? categoria]) async {
+    Questao questao = await getQuestaoAleatoria(categoria);
     if (questoes.where((Questao q) => q.id == questao.id).isEmpty) {
       return questao;
     } else {
       print('achou questao igual');
-      return addQuestao(questoes);
+      return addQuestao(questoes, categoria);
       //return Future.value(null);
     }
   }
 
-  Future<Questao> getQuestaoAleatoria() async {
+  Future<Questao> getQuestaoAleatoria([Categoria? categoria]) async {
     QuerySnapshot querySnapshot;
+    print('categoria $categoria');
     int random = utilService.gerarRandomQuestao();
-    querySnapshot = await _firestore
-        .collection('questoes')
-        .where('random', isGreaterThanOrEqualTo: random)
-        .orderBy('random', descending: false)
-        .limit(1)
-        .get();
-    if (querySnapshot.docs.isEmpty) {
+    if (categoria != null) {
       querySnapshot = await _firestore
           .collection('questoes')
-          .where('random', isLessThanOrEqualTo: random)
+          .where('random', isGreaterThanOrEqualTo: random)
+          .where('categoriaId', isEqualTo: categoria.id)
           .orderBy('random', descending: false)
           .limit(1)
           .get();
+      if (querySnapshot.docs.isEmpty) {
+        querySnapshot = await _firestore
+            .collection('questoes')
+            .where('random', isLessThanOrEqualTo: random)
+            .where('categoriaId', isEqualTo: categoria.id)
+            .orderBy('random', descending: false)
+            .limit(1)
+            .get();
+      }
+    } else {
+      querySnapshot = await _firestore
+          .collection('questoes')
+          .where('random', isGreaterThanOrEqualTo: random)
+          .orderBy('random', descending: false)
+          .limit(1)
+          .get();
+      if (querySnapshot.docs.isEmpty) {
+        querySnapshot = await _firestore
+            .collection('questoes')
+            .where('random', isLessThanOrEqualTo: random)
+            .orderBy('random', descending: false)
+            .limit(1)
+            .get();
+      }
     }
     return Questao.fromFirestore(querySnapshot.docs.first);
   }

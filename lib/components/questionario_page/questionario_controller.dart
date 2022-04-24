@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simulado_detran/components/questionario_page/questionario_repository.dart';
 import 'package:simulado_detran/model/alternativa_model.dart';
+import 'package:simulado_detran/model/categoria_model.dart';
 import 'package:simulado_detran/model/questao_model.dart';
 import 'package:simulado_detran/model/simulado_realizado_model.dart';
 import 'package:simulado_detran/routes/app_routes.dart';
@@ -18,6 +19,7 @@ class QuestionarioController extends GetxController {
   int segundosCountdown = 1800;
   bool simulado = true;
   bool avulso = false;
+  Categoria? categoria;
 
   String get numQuestaoAtual =>
       questionario == null ? '' : '${questionario!.indexOf(questaoAtual) + 1}';
@@ -46,6 +48,9 @@ class QuestionarioController extends GetxController {
   @override
   onInit() async {
     super.onInit();
+    if (Get.arguments != null && Get.arguments['categoria'] != null) {
+      categoria = Get.arguments['categoria'];
+    }
     if (Get.arguments != null && Get.arguments['simulado'] != null) {
       simulado = Get.arguments['simulado'];
     }
@@ -80,7 +85,7 @@ class QuestionarioController extends GetxController {
     if (simulado) {
       questionario = await repository.getQuestionario();
     } else {
-      questionario = await repository.getQuestionarioAvulso();
+      questionario = await repository.getQuestionarioAvulso(categoria);
     }
     carregando = false;
     questaoAtual = questionario!.first;
@@ -94,7 +99,8 @@ class QuestionarioController extends GetxController {
     if (avulso) {
       carregando = true;
       update();
-      questionario = await repository.getProximaQuestaoAvulsa(questionario!);
+      questionario =
+          await repository.getProximaQuestaoAvulsa(questionario!, categoria);
       carregando = false;
       update();
     }
