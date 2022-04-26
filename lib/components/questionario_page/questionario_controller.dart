@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simulado_detran/components/questionario_page/questionario_repository.dart';
+import 'package:simulado_detran/exceptions/questoes_excedidas_exception.dart';
 import 'package:simulado_detran/model/alternativa_model.dart';
 import 'package:simulado_detran/model/categoria_model.dart';
 import 'package:simulado_detran/model/questao_model.dart';
@@ -96,17 +97,25 @@ class QuestionarioController extends GetxController {
 
   avancarQuestao() async {
     print('avancar questao');
-    if (avulso) {
-      carregando = true;
+    try {
+      if (avulso) {
+        carregando = true;
+        update();
+        questionario =
+            await repository.getProximaQuestaoAvulsa(questionario!, categoria);
+        carregando = false;
+        update();
+      }
+      questaoAtual = questionario![questionario!.indexOf(questaoAtual) + 1];
+      alternativaSelecionada = null;
       update();
-      questionario =
-          await repository.getProximaQuestaoAvulsa(questionario!, categoria);
-      carregando = false;
-      update();
+    } on QuestoesExcedidasException catch (e) {
+      utilService.showToast(e.mensagem);
+      finalizarQuestionario();
+    } catch (e) {
+      utilService.snackBarErro(mensagem: 'Ocorreu um erro durante a pesquisa');
+      print('Erro: $e');
     }
-    questaoAtual = questionario![questionario!.indexOf(questaoAtual) + 1];
-    alternativaSelecionada = null;
-    update();
   }
 
   retrocederQuestao() {
