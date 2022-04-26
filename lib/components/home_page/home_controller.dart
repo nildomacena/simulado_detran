@@ -5,6 +5,7 @@ import 'package:simulado_detran/components/home_page/widgets/icone_menu_model.da
 import 'package:simulado_detran/model/categoria_model.dart';
 import 'package:simulado_detran/model/resultado_questionario_model.dart';
 import 'package:simulado_detran/routes/app_routes.dart';
+import 'package:simulado_detran/util/local_database_service.dart';
 
 class HomeController extends GetxController {
   final HomeRepository repository;
@@ -89,6 +90,9 @@ class HomeController extends GetxController {
       ];
 
   irParaSimulado() {
+    /* Testes */
+    /*  databaseService.getQuestoes();
+    return; */
     Get.toNamed(Routes.questionario,
         arguments: {'simulado': true, 'avulso': false});
   }

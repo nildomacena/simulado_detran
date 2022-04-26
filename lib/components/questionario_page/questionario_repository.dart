@@ -3,12 +3,16 @@ import 'package:simulado_detran/data/firestore_provider.dart';
 import 'package:simulado_detran/model/categoria_model.dart';
 import 'package:simulado_detran/model/questao_model.dart';
 import 'package:simulado_detran/model/resultado_questionario_model.dart';
+import 'package:simulado_detran/util/local_database_service.dart';
 
 class QuestionarioRepository {
   final FirestoreProvider firestoreProvider;
   QuestionarioRepository({required this.firestoreProvider});
 
-  Future<List<Questao>> getQuestionario([int? numQuestoes]) {
+  Future<List<Questao>> getQuestionario([int? numQuestoes]) async {
+    List<Questao> questoes = databaseService.getQuestoes();
+    print('questoes box: $questoes');
+    if (questoes.isNotEmpty) return questoes;
     return firestoreProvider.getQuestionario(numQuestoes ?? 10);
   }
 

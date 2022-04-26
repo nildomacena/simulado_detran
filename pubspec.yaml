@@ -49,6 +49,7 @@ dependencies:
   syncfusion_flutter_charts: ^20.1.50
   salomon_bottom_bar: ^3.3.0
   line_icons: ^2.0.1
+  connectivity_plus: ^2.3.0
   
 dev_dependencies:
   flutter_test:

@@ -37,12 +37,26 @@ class Questao {
         imagem: data['imagem']);
   }
 
+  factory Questao.fromMap(Map<String, dynamic> data) {
+    List<Alternativa> alternativas = (data['alternativas'] as List)
+        .map((d) => Alternativa.fromMap(d))
+        .toList();
+    alternativas.shuffle();
+    Categoria categoria = Categoria.fromMap(data['categoria']);
+    return Questao(
+        id: data['id'],
+        enunciado: data['enunciado'],
+        alternativas: alternativas,
+        categoria: categoria,
+        imagem: data['imagem']);
+  }
+
   Map<String, dynamic> get asMap {
     return {
       'id': id,
       'enunciado': enunciado,
       'imagem': imagem,
-      'alternativas': alternativas.map((a) => a.asMap),
+      'alternativas': alternativas.map((a) => a.asMap).toList(),
       'categoria': categoria.asMap,
       'resposta': resposta?.asMap ?? '',
     };

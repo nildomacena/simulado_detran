@@ -16,7 +16,6 @@ class FirestoreProvider {
 
   FirestoreProvider() {
     Future.delayed(const Duration(seconds: 1)).then((value) {
-      print('user: ${_auth.currentUser}');
       if (_auth.currentUser == null && box.read('email') && box.read('senha')) {
         fazerLogin(box.read('email'), box.read('senha'));
       }
@@ -178,6 +177,11 @@ class FirestoreProvider {
     return Questao.fromFirestore(querySnapshot.docs.first);
   }
 
+  Future<List<Questao>> getTodasQuestoes() async {
+    QuerySnapshot querySnapshot = await _firestore.collection('questoes').get();
+    return querySnapshot.docs.map((s) => Questao.fromFirestore(s)).toList();
+  }
+
   Stream<List<ResultadoQuestionario>> streamResultado() {
     return _auth.authStateChanges().asyncExpand((user) => user == null
         ? null
@@ -210,5 +214,11 @@ class FirestoreProvider {
       'data': FieldValue.serverTimestamp()
     });
     //print('questionario: ${questionario.first.asMap}');
+  }
+
+  Future<num> getVersaoBD() async {
+    DocumentSnapshot snapshot =
+        await _firestore.doc('configuracao/configuracao').get();
+    return snapshot.get('versao');
   }
 }
