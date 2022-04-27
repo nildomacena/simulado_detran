@@ -20,17 +20,21 @@ class ContainerQuestao extends StatelessWidget {
         shrinkWrap: true,
         children: [
           Card(
-            child: Container(
-                margin: const EdgeInsets.only(
-                    left: 10, right: 10, top: 20, bottom: 10),
-                child: Text(
-                  'asldfkçldsa' + questao.enunciado,
-                  textAlign: TextAlign.justify,
-                  style: const TextStyle(fontSize: 18),
-                )),
+            child: Column(
+              children: [
+                Container(
+                    margin: const EdgeInsets.only(
+                        left: 10, right: 10, top: 20, bottom: 10),
+                    child: Text(
+                      'asldfkçldsa' + questao.enunciado,
+                      textAlign: TextAlign.justify,
+                      style: const TextStyle(fontSize: 18),
+                    )),
+                if (questao.imagem != null && questao.imagem!.isNotEmpty)
+                  SizedBox(height: 100, child: Image.network(questao.imagem!)),
+              ],
+            ),
           ),
-          if (questao.imagem != null && questao.imagem!.isNotEmpty)
-            SizedBox(height: 100, child: Image.network(questao.imagem!)),
           const Divider(),
           ListView.builder(
               shrinkWrap: true,

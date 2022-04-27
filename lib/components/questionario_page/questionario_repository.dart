@@ -45,6 +45,8 @@ class QuestionarioRepository {
     int totalQuestoes = questionario.length;
     int totalRespostas = questionario.where((q) => q.resposta != null).length;
     int totalAcertos = questionario.where((q) => q.acertou).length;
+    databaseService.setAcertosPorCategorias(
+        questionario, await firestoreProvider.getCategorias());
     await databaseService.salvarQuestionario(
         totalQuestoes, totalRespostas, totalAcertos);
     return firestoreProvider.salvarQuestionarioRespondido(

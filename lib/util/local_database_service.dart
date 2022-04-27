@@ -61,11 +61,41 @@ class LocalDatabaseService {
       'totalQuestoes': totalQuestoes,
       'totalRespostas': totalRespostas,
       'totalAcertos': totalAcertos,
-      'data': DateTime.now()
+      'data': DateTime.now().millisecondsSinceEpoch
     };
     questionarios.add(data);
     return box.write('questionarios', questionarios);
   }
+
+  Future<Map> setAcertosPorCategorias(
+      List<Questao> questionario, List<Categoria> categorias) async {
+    Map<String, Map<String, int>> map = {};
+    if (box.read(KeysBox.acertosCategorias) == null) {
+      for (var c in categorias) {
+        map[c.id] = {'totalRespondidas': 0, 'totalAcertos': 0};
+      }
+    }
+    for (String categoriaId in map.keys) {
+      List<Questao> questoesRespondidas =
+          questionario.where((q) => q.categoria.id == categoriaId).toList();
+      int parcialAcertos = questionario.where((q) => q.acertou).length;
+      int totalRespondidas = map[categoriaId]!['totalRespondidas']!;
+      totalRespondidas += questoesRespondidas.length;
+      int totalAcertos = map[categoriaId]!['totalRespondidas']!;
+      totalAcertos += parcialAcertos;
+      map[categoriaId] = {
+        'totalRespondidas': totalRespondidas,
+        'totalAcertos': totalAcertos
+      };
+    }
+
+    await box.write(KeysBox.acertosCategorias, map);
+    return box.read(KeysBox.acertosCategorias);
+  }
 }
 
 LocalDatabaseService databaseService = LocalDatabaseService();
+
+abstract class KeysBox {
+  static const acertosCategorias = 'acertosCategorias';
+}

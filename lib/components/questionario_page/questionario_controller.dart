@@ -111,7 +111,7 @@ class QuestionarioController extends GetxController {
       update();
     } on QuestoesExcedidasException catch (e) {
       utilService.showToast(e.mensagem);
-      finalizarQuestionario();
+      finalizarQuestionario(true);
     } catch (e) {
       utilService.snackBarErro(mensagem: 'Ocorreu um erro durante a pesquisa');
       print('Erro: $e');
@@ -184,7 +184,7 @@ class QuestionarioController extends GetxController {
     return result ?? false;
   }
 
-  finalizarQuestionario() async {
+  finalizarQuestionario([bool? obrigatorio]) async {
     if (questionario == null ||
         questionario!.where((q) => q.resposta != null).isEmpty) {
       Get.back();
@@ -195,34 +195,39 @@ class QuestionarioController extends GetxController {
       //Verifica se é questão avulso e se o usuário não selecionou a última resposta
       questionario!.removeLast();
     }
-
-    bool? result = await Get.dialog(AlertDialog(
-      title: const Text('Finalizar Questionário'),
-      content: SizedBox(
-        height: 100,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const Text('Deseja finalizar o questionário?'),
-            Text(
-                'Questões respondidas: $questoesRespondidas/${questionario!.length}'),
-          ],
+    bool? result;
+    if (obrigatorio != null && obrigatorio) {
+      result = true;
+    } else {
+      result = await Get.dialog(AlertDialog(
+        title: const Text('Finalizar Questionário'),
+        content: SizedBox(
+          height: 100,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const Text('Deseja finalizar o questionário?'),
+              Text(
+                  'Questões respondidas: $questoesRespondidas/${questionario!.length}'),
+            ],
+          ),
         ),
-      ),
-      actions: [
-        TextButton(
-            onPressed: () {
-              Get.back();
-            },
-            child: const Text('CANCELAR')),
-        TextButton(
-            onPressed: () {
-              Get.back(result: true);
-            },
-            child: const Text('FINALIZAR')),
-      ],
-    ));
+        actions: [
+          TextButton(
+              onPressed: () {
+                Get.back();
+              },
+              child: const Text('CANCELAR')),
+          TextButton(
+              onPressed: () {
+                Get.back(result: true);
+              },
+              child: const Text('FINALIZAR')),
+        ],
+      ));
+    }
+
     if (result != null && result) {
       Get.back();
       repository.finalizarQuestionario(questionario!);
