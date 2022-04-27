@@ -56,7 +56,8 @@ class LocalDatabaseService {
     int totalRespostas,
     int totalAcertos,
   ) async {
-    List<Map> questionarios = box.read('questionarios') ?? [];
+    box.writeIfNull(KeysBox.questionarios, []);
+    List questionarios = box.read(KeysBox.questionarios);
     Map data = {
       'totalQuestoes': totalQuestoes,
       'totalRespostas': totalRespostas,
@@ -64,21 +65,28 @@ class LocalDatabaseService {
       'data': DateTime.now().millisecondsSinceEpoch
     };
     questionarios.add(data);
-    return box.write('questionarios', questionarios);
+    return box.write(KeysBox.questionarios, questionarios);
   }
 
   Future<Map> setAcertosPorCategorias(
       List<Questao> questionario, List<Categoria> categorias) async {
-    Map<String, Map<String, int>> map = {};
-    if (box.read(KeysBox.acertosCategorias) == null) {
+    Map<String, Map> map = {};
+
+    if (box.read(KeysBox.acertosCategorias) == null ||
+        box.read(KeysBox.acertosCategorias)?.keys.isEmpty) {
       for (var c in categorias) {
         map[c.id] = {'totalRespondidas': 0, 'totalAcertos': 0};
       }
+    } else {
+      print(
+          'box.read(KeysBox.acertosCategorias): ${box.read(KeysBox.acertosCategorias)}');
+      map = Map<String, Map>.from(box.read(KeysBox.acertosCategorias));
     }
     for (String categoriaId in map.keys) {
       List<Questao> questoesRespondidas =
           questionario.where((q) => q.categoria.id == categoriaId).toList();
-      int parcialAcertos = questionario.where((q) => q.acertou).length;
+
+      int parcialAcertos = questoesRespondidas.where((q) => q.acertou).length;
       int totalRespondidas = map[categoriaId]!['totalRespondidas']!;
       totalRespondidas += questoesRespondidas.length;
       int totalAcertos = map[categoriaId]!['totalRespondidas']!;
@@ -88,9 +96,13 @@ class LocalDatabaseService {
         'totalAcertos': totalAcertos
       };
     }
-
+    print('acertos por categorias: $map');
     await box.write(KeysBox.acertosCategorias, map);
     return box.read(KeysBox.acertosCategorias);
+  }
+
+  Future resetAcertosPorCategorias() {
+    return box.write(KeysBox.acertosCategorias, null);
   }
 }
 
@@ -98,4 +110,5 @@ LocalDatabaseService databaseService = LocalDatabaseService();
 
 abstract class KeysBox {
   static const acertosCategorias = 'acertosCategorias';
+  static const questionarios = 'questionarios';
 }
