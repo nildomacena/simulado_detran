@@ -15,12 +15,27 @@ class LocalDatabaseService {
     return true;
   }
 
+  Future<dynamic> armazenarCategorias(
+      List<Categoria> categorias, num versao) async {
+    List<Map<String, dynamic>> listMap = [];
+    listMap = categorias.map((q) => q.asMap).toList();
+    await box.write('versao', versao);
+    return box.write(KeysBox.categorias, listMap);
+  }
+
+  Future<List<Categoria>> getCategorias() async {
+    await box.writeIfNull(KeysBox.categorias, []);
+    return box
+        .read(KeysBox.categorias)
+        .map((c) => Categoria.fromMap(c))
+        .toList();
+  }
+
   Future<dynamic> armazenarQuestoes(List<Questao> questoes, num versao) async {
     List<Map<String, dynamic>> listMap = [];
     listMap = questoes.map((q) => q.asMap).toList();
-    print('box.read: ${box.read('versao')}');
     await box.write('versao', versao);
-    return box.write('questoes', listMap);
+    return box.write(KeysBox.questoes, listMap);
   }
 
   List<Questao> getQuestoes([int? quantidade]) {
@@ -104,6 +119,10 @@ class LocalDatabaseService {
   Future resetAcertosPorCategorias() {
     return box.write(KeysBox.acertosCategorias, null);
   }
+
+  Map getAcertosPorCategorias() {
+    return box.read(KeysBox.acertosCategorias);
+  }
 }
 
 LocalDatabaseService databaseService = LocalDatabaseService();
@@ -111,4 +130,6 @@ LocalDatabaseService databaseService = LocalDatabaseService();
 abstract class KeysBox {
   static const acertosCategorias = 'acertosCategorias';
   static const questionarios = 'questionarios';
+  static const categorias = 'categorias';
+  static const questoes = 'questoes';
 }
