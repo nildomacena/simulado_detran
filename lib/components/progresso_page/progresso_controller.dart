@@ -12,13 +12,21 @@ class ProgressoController extends GetxController {
   final ProgressoRepository repository;
   ProgressoController(this.repository) {
     _resultados.bindStream(repository.streamResultados());
+    _resultados.stream.listen((event) {
+      updateProgresso();
+    });
   }
 
   @override
   void onInit() async {
+    updateProgresso();
     super.onInit();
+  }
+
+  updateProgresso() {
     repository.getAnaliseCategorias().then((value) {
-      print('value: $value');
+      analiseCategoria = value;
+      update();
     });
   }
 }

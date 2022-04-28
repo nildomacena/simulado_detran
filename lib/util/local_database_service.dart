@@ -1,5 +1,6 @@
 import 'package:get_storage/get_storage.dart';
 import 'package:simulado_detran/exceptions/questoes_excedidas_exception.dart';
+import 'package:simulado_detran/model/analise_categoria_model.dart';
 import 'package:simulado_detran/model/categoria_model.dart';
 import 'package:simulado_detran/model/questao_model.dart';
 
@@ -24,11 +25,13 @@ class LocalDatabaseService {
   }
 
   Future<List<Categoria>> getCategorias() async {
+    List<Categoria> categorias = [];
     await box.writeIfNull(KeysBox.categorias, []);
-    return box
-        .read(KeysBox.categorias)
-        .map((c) => Categoria.fromMap(c))
-        .toList();
+    for (Map<String, dynamic> element
+        in (box.read(KeysBox.categorias) as List)) {
+      categorias.add(Categoria.fromMap(element));
+    }
+    return categorias;
   }
 
   Future<dynamic> armazenarQuestoes(List<Questao> questoes, num versao) async {
@@ -120,8 +123,16 @@ class LocalDatabaseService {
     return box.write(KeysBox.acertosCategorias, null);
   }
 
-  Map getAcertosPorCategorias() {
-    return box.read(KeysBox.acertosCategorias);
+  List<AnaliseCategoria> getAcertosPorCategorias(List<Categoria> categorias) {
+    Map map = box.read(KeysBox.acertosCategorias);
+    List<AnaliseCategoria> analisePorCategorias = [];
+    for (Categoria categoria in categorias) {
+      analisePorCategorias.add(AnaliseCategoria(
+          categoria: categoria,
+          questoesRespondidas: map[categoria.id]['totalRespondidas'],
+          acertos: map[categoria.id]['totalAcertos']));
+    }
+    return analisePorCategorias;
   }
 }
 

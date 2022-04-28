@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simulado_detran/components/progresso_page/progresso_controller.dart';
+import 'package:simulado_detran/components/progresso_page/widgets/analise_categoria_container.dart';
 import 'package:simulado_detran/model/resultado_questionario_model.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -10,6 +11,8 @@ class ProgressoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('build progresso page');
+    controller.updateProgresso();
     Widget grafico() => GetX<ProgressoController>(builder: (_) {
           if (_.resultados.isEmpty) return Container();
           return Container(
@@ -53,15 +56,29 @@ class ProgressoPage extends StatelessWidget {
           );
         });
 
+    Widget analisePorCategorias = GetBuilder<ProgressoController>(builder: (_) {
+      if (_.analiseCategoria == null) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+      return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: _.analiseCategoria!.length,
+          itemBuilder: ((context, index) =>
+              AnaliseCategoriaContainer(_.analiseCategoria![index])));
+    });
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Seu progresso'),
+        title: const Text('Seu progresso'),
       ),
       body: Container(
         alignment: Alignment.center,
         child: ListView(
           shrinkWrap: true,
-          children: [grafico()],
+          children: [grafico(), analisePorCategorias],
         ),
       ),
     );

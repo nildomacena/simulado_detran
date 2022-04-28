@@ -18,8 +18,9 @@ class ProgressoRepository {
     if (categorias.isEmpty) {
       categorias = await firestoreProvider.getCategorias();
     }
-    Map map = databaseService.getAcertosPorCategorias();
+    return databaseService.getAcertosPorCategorias(categorias);
 
+    /* 
     List<AnaliseCategoria> analiseCategoria = [];
     for (String id in map.keys) {
       analiseCategoria.add(AnaliseCategoria(
@@ -27,6 +28,6 @@ class ProgressoRepository {
           questoesRespondidas: map[id]['totalRespondidas'],
           acertos: map[id]['totalAcertos']));
     }
-    return analiseCategoria;
+    return analiseCategoria; */
   }
 }

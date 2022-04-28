@@ -9,4 +9,7 @@ class AnaliseCategoria {
       {required this.categoria,
       required this.questoesRespondidas,
       required this.acertos});
+
+  double get porcentagemAcertos =>
+      questoesRespondidas == 0 ? 0 : acertos / questoesRespondidas;
 }
